@@ -27,12 +27,9 @@ UserSchema.statics.createUser = async function (username, password) {
 UserSchema.statics.findUser = async function (usern) {
     console.log("calling findone");
     try {
-        console.log("calling findone");
         const user = await this.findOne({ username: usern });
-        console.log("afer findone");
         return user;
     } catch (error) {
-        console.log(error);
         throw error;
     }
 }

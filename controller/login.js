@@ -18,6 +18,7 @@ const submitLogin = async function (req, res) {
                 },
                 process.env.ACCESS_TOKEN_SECRET
             )
+            // Return a jwt with the username
             return res.json({ status: 'ok', token: token });
         }
         res.json({ status: 'error', error: 'Invalid Password' });
