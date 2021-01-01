@@ -21,10 +21,10 @@ const submitLogin = async function (req, res) {
             // Return a jwt with the username
             return res.json({ status: 'ok', token: token });
         }
-        res.json({ status: 'error', error: 'Invalid Password' });
+        return res.json({ status: 'error', error: 'Invalid Password' });
     } catch (error) {
-        console.log("error");
-        res.json({ status: 'error', error: 'Invalid Username/Password' });
+        console.log(error);
+        return res.json({ status: 'error', error: 'Invalid Username/Password'});
     }
 }
 

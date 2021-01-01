@@ -3,8 +3,8 @@ class WebSocket {
         user.on('disconnect', () => {
             console.log("disconnect");
         })
-        user.on('connection', (hello) => {
-            console.log("connect" + hello);
+        user.on('connection', (username) => {
+            console.log("connect: " + username + "socket: " + user.id);
         })
     }
 }

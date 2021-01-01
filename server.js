@@ -14,10 +14,10 @@ const register = require("./router/register");
 const login = require("./router/login");
 
 // socket 
-const {Socket} = require("./Utils/socket.js");
+const { Socket } = require("./Utils/socket.js");
 
 // middlewares 
-const decode = require("./middlewares/validateJwt");
+const {validateJwt} = require("./middlewares/validateJwt");
 
 // connecting to mongo
 mongoose.connect('mongodb://localhost:27017/chat', {
@@ -48,17 +48,17 @@ app.use("/login", login);
 
 // send login view
 app.get('/login', (req, res) => {
-    res.sendFile(__dirname + "/public/login.html");
+    return res.sendFile(__dirname + "/public/login.html");
 })
 
 // send register view
 app.get('/register', (req, res) => {
-    res.sendFile(__dirname + "/public/register.html");
+    return res.sendFile(__dirname + "/public/register.html");
 })
 
-// send chat view need to implement validation
+// send chat view
 app.get('/chat', (req, res) => {
-    res.sendFile(__dirname + "/public/chat.html");
+    return res.sendFile(__dirname + "/public/chat.html");
 })
 
 

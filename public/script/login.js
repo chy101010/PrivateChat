@@ -13,11 +13,10 @@ async function submitLogin(event) {
             password
         })
     }).then((res) => res.json());
-    // console.log(result1);
     console.log(result);
     if (result.status === "ok") {
         sessionStorage.setItem("token", result.token);
-        alert("success");
+        window.location.href = "/chat";
     }
     else {
         alert(result.error);

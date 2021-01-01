@@ -25,7 +25,6 @@ UserSchema.statics.createUser = async function (username, password) {
  * @param {String} usern 
  */
 UserSchema.statics.findUser = async function (usern) {
-    console.log("calling findone");
     try {
         const user = await this.findOne({ username: usern });
         return user;
