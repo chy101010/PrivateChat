@@ -22,11 +22,11 @@ UserSchema.statics.createUser = async function (username, password) {
 }
 
 /**
- * @param {String} usern 
+ * @param {String} username 
  */
-UserSchema.statics.findUser = async function (usern) {
+UserSchema.statics.findUser = async function (username) {
     try {
-        const user = await this.findOne({ username: usern });
+        const user = await this.findOne({ "username": username });
         return user;
     } catch (error) {
         throw error;

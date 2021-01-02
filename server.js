@@ -14,7 +14,7 @@ const register = require("./router/register");
 const login = require("./router/login");
 
 // socket 
-const { Socket } = require("./Utils/socket.js");
+const { WebSocket } = require("./Utils/socket.js");
 
 // middlewares 
 const {validateJwt} = require("./middlewares/validateJwt");
@@ -35,7 +35,7 @@ mongoose.connection.on('disconnected', () => {
 })
 
 mongoose.connection.on('error', (error) => {
-    console.log(`An error ${error} has occurred in Mongo`);
+    console.log(`Failing to connect to Mongo`);
     mongoose.disconnect();
 })
 
@@ -45,6 +45,10 @@ app.use(bodyParser.json());
 
 app.use("/register", register);
 app.use("/login", login);
+
+app.get("", (req, res) => {
+    res.redirect('/login');
+})
 
 // send login view
 app.get('/login', (req, res) => {
@@ -67,7 +71,7 @@ const server = http.createServer(app);
 // Intergrating socket connection
 socket = io(http);
 global.io = socket.listen(server);
-global.io.on('connection', Socket.connection);
+global.io.on('connection', WebSocket.connection);
 
 // listening at port 3000
 server.listen(port, () => {
