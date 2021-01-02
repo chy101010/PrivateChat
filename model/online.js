@@ -2,8 +2,8 @@ const mongoose = require("mongoose");
 
 const OnlineSchema = new mongoose.Schema(
     {
-        username: { type: String, required: true},
-        socketId: { type: String, required: true}
+        username: { type: String, required: true },
+        socketId: { type: String, required: true }
     },
     { collection: 'online' }
 )
@@ -28,7 +28,7 @@ OnlineSchema.statics.logOnline = async function (username, socketId) {
  */
 OnlineSchema.statics.logOffLine = async function (socketId) {
     try {
-        const result = await this.deleteOne({"socketId" : socketId});
+        const result = await this.deleteOne({ "socketId": socketId });
         console.log(result);
         return result;
     } catch (error) {
@@ -62,6 +62,14 @@ OnlineSchema.statics.findUserBySocketId = async function (socketId) {
     }
 }
 
+OnlineSchema.statics.logOffAll = async function () {
+    try {
+        const result = await this.deleteMany({});
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
 
 const model = mongoose.model('OnlineSchema', OnlineSchema);
 

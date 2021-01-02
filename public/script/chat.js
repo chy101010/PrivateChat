@@ -1,9 +1,17 @@
 const socket = io();
 (function () {
-    socket.emit('connection', sessionStorage.getItem('token'));
+    socket.emit('identity', sessionStorage.getItem('token'));
 
     socket.on('redirect', () => {
-        alert("Login to access the functionalities");
         window.location.href = "/login";
+    });
+
+    socket.on('display-message', (msg) => {
+        console.log("msg");
+    });
+
+    document.getElementById("lol").addEventListener("click", () => {
+        console.log("called");
+        socket.emit("message", sessionStorage.getItem('token'), "12341234", "lol")
     });
 })();

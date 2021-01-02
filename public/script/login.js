@@ -25,5 +25,7 @@ async function submitLogin(event) {
 
 (function () {
     const form = document.getElementById("login-form");
+    const register = document.getElementById("to-register");
+    register.onclick = () => window.location.href = "http://localhost:3000/register";
     form.addEventListener('submit', submitLogin);
 })();
