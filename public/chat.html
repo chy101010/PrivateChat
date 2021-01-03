@@ -1,26 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <title>SimpleChat</title>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" type="text/css" href="./style/chat.css" />
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" media="screen" href="./style/chat.css">
+    <title>chat</title>
 </head>
-
 <body>
-
-    <div id="chat-containter">
-        <div class="box search-container">A</div>
-        <div class="box conversation-list">A</div>
-        <div class="box chat-title">A</div>
-        <div class="box message-list">A</div>
-        <div class="box find-section">A</div>
-        <div class="box input-section">A</div>
-        <button type="button" id = "lol">Click Me!</button>
+    <div id="chat-container">
+        <div id="search-container">
+            <input type="text" placeholder="Search" />
+        </div>
+        <div id="conversation-list">
+            <div class="conversation active">
+                <div class="title-text">doraemon</div>
+                <div class=created-date>Apr 16</div>
+                <div class="conversation-message">
+                    this is a message this is a message this is a message 
+                </div>
+            </div>
+        </div>
+        <div id="new-message-container">
+            <a href="#">+</a>
+        </div>
+        <div id="chat-title">
+            <span id = "receiver-username">receiver-username</span>
+        </div>
+        <div id="chat-message-list">
+            <div class="message-row your-message">
+                <div class="message-text">Ok then Ok then Ok then Ok then</div>
+                <div class="message-time"> Apr 16</div>
+            </div>
+            <div class="message-row other-message">
+                <div class="message-text">Ok then</div>
+                <div class="message-time"> Apr 16</div>
+            </div>
+        </div>
+        <div id="chat-form">
+            <input type="text" placeholder="type a message..." maxlength="100"/>
+        </div>
     </div>
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="script/chat.js"></script>
 </body>
-
 </html>
