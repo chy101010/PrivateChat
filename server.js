@@ -48,7 +48,6 @@ app.get('/chat', (req, res) => {
 })
 
 
-
 // Create HTTP server
 const server = http.createServer(app);
 // Intergrating socket connection

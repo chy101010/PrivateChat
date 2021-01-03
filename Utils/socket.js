@@ -1,5 +1,6 @@
-const onlineUsers = require("../model/online");
+const OnlineUsers = require("../model/online");
 const Users = require("../model/user");
+const Message = require("../model/message");
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
@@ -7,7 +8,7 @@ class WebSocket {
     connection(user) {
         // handle socket disconnect
         user.on('disconnect', async () => {
-            const disconnected = await onlineUsers.findUserBySocketId(user.id);
+            const disconnected = await OnlineUsers.findUserBySocketId(user.id);
             if (!disconnected) {
                 return console.log('Disconnect: anonymous user')
             }
@@ -22,7 +23,7 @@ class WebSocket {
                 if (!(await Users.findUser(decoded.username))) {
                     throw new Error("");
                 }
-                const connected = await onlineUsers.logOnline(decoded.username, user.id);
+                const connected = await OnlineUsers.logOnline(decoded.username, user.id);
                 console.log(`Connect:${connected}`);
             } catch {
                 global.io.to(user.id).emit("redirect");
@@ -32,19 +33,25 @@ class WebSocket {
 
         user.on("message", async (token, receiver, msg) => {
             try {
-                const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-                const receive = await onlineUsers.findUserByUsername(receiver);
-                console.log(receive);
-                if(receive) {
+                const sender = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET).username;
+                const receive = await Users.findUser(receiver);
+                if(!receive) {
+                    throw new Error("Invalid Receiver");
+                }
+                const isOnline = await OnlineUsers.findUserByUsername(receiver);
+                // Log into the db
+                Message.postMessage(sender, receriver, msg);
+                // Emit message to the online receiver directly real time
+                if(isOnline) {
                     receive.forEach((online) =>{
-                        global.io.to(online.socketId).emit("display-message", msg);
+                        global.io.to(online.socketId).emit("display-message", msg, sender);
                     })
                 }
                 else {
-                    console.log("Not online")
+                    console.log("Receiver is not online thus logged into the db");
                 }
-            }catch {
-
+            }catch(eror) {
+                console.log(error.Message);
             }
         })
     }

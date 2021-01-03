@@ -6,8 +6,8 @@ const socket = io();
         window.location.href = "/login";
     });
 
-    socket.on('display-message', (msg) => {
-        console.log("msg");
+    socket.on('display-message', (msg, sender) => {
+        console.log(`Message: ${msg}, Sender:${sender}`);
     });
 
     document.getElementById("lol").addEventListener("click", () => {
