@@ -26,7 +26,7 @@ app.use(bodyParser.json());
 
 app.use("/register", register);
 app.use("/login", login);
-// app.use("/chat",validateJwt, chat);
+app.use("/api/chat", validateJwt, chat);
 
 app.get("", (req, res) => {
     res.redirect('/login');

@@ -42,7 +42,7 @@ OnlineSchema.statics.logOffLine = async function (socketId) {
  */
 OnlineSchema.statics.findUserByUsername = async function (username) {
     try {
-        const users = await this.find({ "username": username });
+        const users = await this.find({ "username" : username });
         return users;
     } catch (error) {
         throw error;

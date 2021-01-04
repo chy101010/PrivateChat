@@ -1,43 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <link rel="stylesheet" type="text/css" media="screen" href="./style/chat.css">
     <title>chat</title>
 </head>
+
 <body>
     <div id="chat-container">
         <div id="search-container">
-            <input type="text" placeholder="Search" />
+            <input type="text" id="search-username" placeholder="Search Username" />
         </div>
         <div id="conversation-list">
-            <div class="conversation active">
+            <button type="button" id="doraemon" class="conversation title-text">
+                doraemon
+            </button>
+            <!-- <div class="conversation active">
                 <div class="title-text">doraemon</div>
                 <div class=created-date>Apr 16</div>
                 <div class="conversation-message">
                     this is a message this is a message this is a message 
                 </div>
-            </div>
+            </div> -->
         </div>
         <div id="new-message-container">
             <a href="#">+</a>
         </div>
         <div id="chat-title">
-            <span id = "receiver-username">receiver-username</span>
+            <span id="receiver-username">receiver-username</span>
         </div>
         <div id="chat-message-list">
             <div class="message-row your-message">
-                <div class="message-text">Ok then Ok then Ok then Ok then</div>
-                <div class="message-time"> Apr 16</div>
+                <!-- <div class="message-text">Ok then Ok then Ok then Ok then</div> -->
+                <!-- <div class="message-time"> Apr 16</div> -->
             </div>
             <div class="message-row other-message">
-                <div class="message-text">Ok then</div>
-                <div class="message-time"> Apr 16</div>
+                <!-- <div class="message-text">Ok then</div> -->
+                <!-- <div class="message-time"> Apr 16</div> -->
             </div>
         </div>
         <div id="chat-form">
-            <input type="text" placeholder="type a message..." maxlength="100"/>
+            <input type="text" id="user-input" placeholder="type a message..." maxlength="100" />
         </div>
     </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="./script/chat.js"></script>
 </body>
+
 </html>
