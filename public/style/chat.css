@@ -260,3 +260,7 @@ body {
 .active {
     background-color: pink;
 }
+
+.new {
+    background-color: tomato;
+}
