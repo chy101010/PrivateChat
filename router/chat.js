@@ -3,7 +3,9 @@ const express = require('express');
 const chat = require("../controller/chat.js")
 
 const router = express.Router();
-router.get('/create/:receiver', chat.createConversation);
-router.post('/post', chat.postMessage);
+router.get('/send/:receiver', chat.sendConversationRequest);
+router.get('/accept/:conId')
+router.get('/retrieve', chat.retrieveConversations);
+// router.post('/post', chat.postMessage);
 
 module.exports = router;

@@ -10,40 +10,75 @@
 <body>
     <div id="chat-container">
         <div id="search-container">
-            <input type="text" id="search-username" placeholder="Search Username" />
+            <input type="text" id = "search-username" placeholder="Search Username" />
         </div>
         <div id="conversation-list">
-            <button type="button" id="doraemon" class="conversation title-text">
-                doraemon
-            </button>
-            <!-- <div class="conversation active">
-                <div class="title-text">doraemon</div>
+            <div class="conversation active" id="demo">
+                <div class="title-text">Username</div>
                 <div class=created-date>Apr 16</div>
                 <div class="conversation-message">
-                    this is a message this is a message this is a message 
+                    this is a message this is a message this is a message
+                    this is a message this is a message this is a message
+                    this is a message this is a message this is a message
                 </div>
-            </div> -->
+                <button class="close-conversation">x</button>
+            </div>
+
+            <div class='friendrequest' id="demo">
+                <div class="title-text">Username</div>
+                <div class=created-date>Apr 16</div>
+                <p>wants to be your friend...</p>
+                <button class="accept">Accept</button>
+                <button class="reject">Reject</button>
+            </div>
+
+            <div class='reqconfirmation' id="demo">
+                <div class="title-text">Username</div>
+                <div class="title-text b">
+                    Friend request has been sent...
+                </div>
+                <div class=created-date>Apr 16</div>
+                <button class="close-conversation">x</button>
+            </div>
+
         </div>
         <div id="new-message-container">
-            <a href="#">+</a>
+            <img src="icons8-head-profile-50.png" alt="">
+            <div class="username">Username:</div>
+            <div class="socket">Socket.io:</div>
         </div>
         <div id="chat-title">
-            <span id="receiver-username">receiver-username</span>
+            <span>doraemon</span>
+            <button id="btn">logout</button>
         </div>
         <div id="chat-message-list">
             <div class="message-row your-message">
-                <!-- <div class="message-text">Ok then Ok then Ok then Ok then</div> -->
-                <!-- <div class="message-time"> Apr 16</div> -->
+                <div class="message-text">Ok then Ok then Ok then Ok then</div>
+                <div class="message-time"> Apr 16</div>
+                <div class="message-text">Ok then</div>
+                <div class="message-time"> Apr 16</div>
+                <div class="message-text">Ok then</div>
+                <div class="message-time"> Apr 16</div>
+                <div class="message-text">Ok then</div>
+                <div class="message-time"> Apr 16</div>
             </div>
             <div class="message-row other-message">
-                <!-- <div class="message-text">Ok then</div> -->
-                <!-- <div class="message-time"> Apr 16</div> -->
+                <div class="message-text">Ok then</div>
+                <div class="message-time"> Apr 16</div>
+                <div class="message-text">Ok then</div>
+                <div class="message-time"> Apr 16</div>
+                <div class="message-text">Ok then</div>
+                <div class="message-time"> Apr 16</div>
+                <div class="message-text">Ok then</div>
+                <div class="message-time"> Apr 16</div>
             </div>
         </div>
         <div id="chat-form">
-            <input type="text" id="user-input" placeholder="type a message..." maxlength="100" />
+            <!-- <img src="" alt="Add Attachment"> -->
+            <input type="text" placeholder="type a message" />
         </div>
     </div>
+
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="./script/chat.js"></script>

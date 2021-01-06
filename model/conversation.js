@@ -14,7 +14,7 @@ function returnResult(stat, msg, id) {
     }
 }
 
-const conversationSchema = new mongoose.Schema(
+const ConversationSchema = new mongoose.Schema(
     {
         _id: {
             type: String,
@@ -32,11 +32,12 @@ const conversationSchema = new mongoose.Schema(
         }
     },
     {
-        collation: "conversations"
+        timestamps: true,
+        collection: "conversations"
     }
 )
 
-conversationSchema.statics.sendRequest = async function (creator, receivor) {
+ConversationSchema.statics.sendRequest = async function (creator, receivor) {
     try {
         const exist = await this.findOne({
             userIds: {
@@ -62,7 +63,7 @@ conversationSchema.statics.sendRequest = async function (creator, receivor) {
     }
 }
 
-conversationSchema.statics.acceptRequest = async function (id, receiver) {
+ConversationSchema.statics.acceptRequest = async function (id, receiver) {
     try {
         const request = await this.findOneAndUpdate(
             {
@@ -73,10 +74,10 @@ conversationSchema.statics.acceptRequest = async function (id, receiver) {
                 status: 'accept'
             });
         if (request) {
-            return returnResult('ok', 'requested accepted', id);
+            return returnResult('ok', 'request accepted', id);
         }
         else {
-            return returnResult('error', 'request accept failed', id);
+            return returnResult('error', 'request unfound', id);
         }
     }
     catch (error) {
@@ -86,13 +87,13 @@ conversationSchema.statics.acceptRequest = async function (id, receiver) {
 }
 
 
-conversationSchema.statics.getConversationsByUsername = async function (username) {
+ConversationSchema.statics.getConversationsByUsername = async function (username) {
     try {
+        console.log(username);
         const result = await this.find(
             {
-                userIds: { $elemMatch: [username] }
+                userIds: { $in: [ username ] }
             }).lean();
-        console.log(result);
         return result;
     } catch (error) {
         console.log("Conversation's getConversationsByUsername", error);
@@ -100,7 +101,9 @@ conversationSchema.statics.getConversationsByUsername = async function (username
     }
 }
 
-conversationSchema.statics.getConversationById = async function (id) {
+
+
+ConversationSchema.statics.getConversationById = async function (id) {
     try {
         const result = await this.findOne(
             {
@@ -114,12 +117,12 @@ conversationSchema.statics.getConversationById = async function (id) {
     }
 }
 
-conversationSchema.statics.deleteConversation = async function (id, username) {
+ConversationSchema.statics.deleteConversation = async function (id, username) {
     try {
         const request = await this.findOneAndDelete(
             {
                 _id: id,
-                userIds: { $elemMatch: { username } }
+                userIds: { $in: [username] }
             });
         if (request) {
             return returnResult('ok', 'request accepted', id);
@@ -132,3 +135,9 @@ conversationSchema.statics.deleteConversation = async function (id, username) {
         throw error;
     }
 }
+
+
+
+const model = mongoose.model('ConversationSchema', ConversationSchema);
+
+module.exports = model;

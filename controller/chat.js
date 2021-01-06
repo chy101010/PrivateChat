@@ -3,23 +3,80 @@ const Message = require('../model/message');
 const Online = require('../model/online');
 const Cons = require('../model/conversation');
 
-
 // send conversations request
 const sendConversationRequest = async function (req, res) {
-    const {receiver} = req.params;
-    try{
-
+    const { receiver } = req.params;
+    const creator = req.username;
+    try {
+        const isExist = await Users.findUser(receiver);
+        if (!isExist || receiver === creator) {
+            return res.json({ status: "failure" });
+        } else {
+            const request = await Cons.sendRequest(creator, isExist.username);
+            const receivers = await Online.findUserByUsername(receiver);
+            if (request.status !== "duplicate") {
+                receivers.forEach((online) => {
+                    global.io.to(online.socketId).emit("request-conversation", { creator, conId: request.conversationId });
+                });
+            }
+            return res.json(request);
+        }
     }
-    catch(error) {
-        
+    catch (error) {
+        return res.json({ status: "error", error: `System Error: ${error.message}` });
+    }
+}
+
+// accept conversations request 
+const acceptConversationRequest = async function (req, res) {
+    const { conId } = req.params;
+    const receiver = req.username;
+    try {
+        const conversation = await Cons.getConversationById(conId);
+        if (!conversation || conversation.status === "accept") {
+            return res.json({ status: "failure", error: "Invalid Conversation Request" });
+        }
+        else {
+            // post to socket.io of the creator 
+            return res.json(await Cons.acceptRequest(conId, receiver));
+        }
+    }
+    catch (error) {
+        return res.json({ status: "error", error: `System Error: ${error.message}` });
     }
 }
 
 // delete conversations
-
-// accept conversations request 
+const deleteConversation = async function (req, res) {
+    const username = req.username;
+    const { conId } = req.params;
+    try {
+        const isExist = await Users.findUser(username);
+        if (!isExist) {
+            return res.json({ status: "failure", error: "Invalid username" });
+        } else {
+            return res.json(await Cons.deleteConversation(conId, username));
+        }
+    } catch (error) {
+        return res.json({ status: "error", error: `System Error: ${error.message}` });
+    }
+}
 
 // retrieve converstaions 
+const retrieveConversations = async function (req, res) {
+    const receiver = req.username;
+    try {
+        const isExist = await Users.findUser(receiver);
+        if (!isExist) {
+            return res.json({ status: "failure", error: "Invalid username" });
+        } else {
+            return res.json({ conversations: await Cons.getConversationsByUsername(receiver), receiver });
+        }
+    } catch (error) {
+        return res.json({ status: "error", error: `System Error: ${error.message}` });
+    }
+}
+
 
 // type message
 
@@ -28,25 +85,25 @@ const sendConversationRequest = async function (req, res) {
 
 
 
-// const createConversation = async function (req, res) {
-//     const { receiver } = req.params;
-//     try {
-//         const result = await Users.findUser(receiver);
-//         const onlines = await Online.findUserByUsername(result.username);
-//         if (result) {
-//             onlines.forEach((online) =>{
-//                 global.io.to(online.socketId).emit("incoming-conversation", req.username);
-//             })
-//             return res.json({ status: "ok", receiver: result.username });
-//         }
-//         else {
-//             return res.json({ status: "failure", error: "The given receiver is undefined" });
-//         }
-//     }
-//     catch (error) {
-//         return res.json({ status: "error", error: `System Error: ${error.message}` })
-//     }
-// }
+const createConversation = async function (req, res) {
+    const { receiver } = req.params;
+    try {
+        const result = await Users.findUser(receiver);
+        const onlines = await Online.findUserByUsername(result.username);
+        if (result) {
+            onlines.forEach((online) => {
+                global.io.to(online.socketId).emit("incoming-conversation", req.username);
+            })
+            return res.json({ status: "ok", receiver: result.username });
+        }
+        else {
+            return res.json({ status: "failure", error: "The given receiver is undefined" });
+        }
+    }
+    catch (error) {
+        return res.json({ status: "error", error: `System Error: ${error.message}` })
+    }
+}
 
 // const postMessage = async function (req, res) {
 //     const username = req.username;
@@ -73,4 +130,4 @@ const sendConversationRequest = async function (req, res) {
 //     }
 // }
 
-module.exports = { createConversation, postMessage }; 
+module.exports = { sendConversationRequest, retrieveConversations, acceptConversationRequest}; 
