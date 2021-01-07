@@ -4,11 +4,17 @@
 //  if the user is online use socket to send directly
 const socket = io();
 (function () {
-    const messages = document.getElementById("chat-message-list");
+    const messagesContainer = document.getElementById("chat-message-list");
     const type = document.getElementById("chat-form");
     const search = document.getElementById("search-container");
     const conversations = document.getElementById("conversation-list");
-    const receiver = document.getElementById("receiver-username");
+    const talkingTo = document.getElementById("receiver");
+
+    // Display the username and socket Id
+    function displayUserInfo(username, id) {
+        document.getElementById("username").innerText += username;
+        document.getElementById("socket").innerText += id;
+    }
 
     // Create a HTML element of the given (type) with class name of (classes) and innerText of (text) 
     function createElement(type, classes, text = '') {
@@ -18,12 +24,14 @@ const socket = io();
         return element;
     }
 
+    // Appending the list of children nodes to the parent node
     function appendChildren(parent, children) {
         children.forEach((child) => parent.appendChild(child));
     }
 
     // Displays a send-request conversation tag
-    function frontDisplayRequest(conId, receiver) {
+    function frontDisplayRequest(conId, receiver, time) {
+        time = time.slice(0, 10);
         // container
         const container = createElement("div", "reqconfirmation");
         container.id = conId;
@@ -32,47 +40,77 @@ const socket = io();
         // message
         const message = createElement("div", "title-text b", "Friend request has been sent...");
         // date
-        const date = createElement("div", "created-date", "Apr 16");
+        const date = createElement("div", "created-date", time);
         // button 
         const button = createElement("button", "close-conversation", "x");
+        addFunctionalityChild(button, deleteConversation);
         appendChildren(container, [username, message, date, button]);
         conversations.appendChild(container);
     }
 
+    // takes in a element and a function, then add that function to an event of the element. The parameter
+    // for that function is the parentElement's Id
+    async function addFunctionalityChild(btn, func, type = "click") {
+        btn.addEventListener(type, async (event) => {
+            event.stopPropagation();
+            func(event.target.parentElement.id);
+        })
+    }
+
+    // takes in a element and a functionm then add that function to an event of the element. The parameter
+    // for that function is the element's Id
+    async function addFunctionality(ele, func, type = "click") {
+        ele.addEventListener(type, async (event) => {
+            event.stopPropagation();
+            func(event.target.id);
+        })
+    }
+
     // Displays a receive-request conversation tag
-    function frontDisplayReceiveRequest(conId, username) {
+    function frontDisplayReceiveRequest(conId, username, time) {
+        time = time.slice(0, 10);
         // container 
         const container = createElement("div", "friendrequest");
         container.id = conId;
         // username
         const usern = createElement("div", "title-text", username);
         // date
-        const date = createElement("div", "created-date", "Apr 16");
+        const date = createElement("div", "created-date", time);
         // message
         const msg = createElement("p", "", "wants to be your friend...");
         // accept btn
         const accept = createElement("button", "accept", "Accept");
-        // accept btn
+        addFunctionalityChild(accept, acceptConversationRequest);
+        // reject btn
         const reject = createElement("button", "reject", "Reject");
+        addFunctionalityChild(reject, deleteConversation);
         appendChildren(container, [usern, date, msg, accept, reject]);
         conversations.appendChild(container);
     }
 
     // Display a established-conversation tag 
-    function frontDisplayConversation(conId, usern) {
+    function frontDisplayConversation(conId, usern, time) {
+        time = time.slice(0, 10);
         // container
         const container = createElement("div", "conversation active");
         container.id = conId;
+        addFunctionality(container, retrieveMessages);
         // username
         const username = createElement("div", "title-text", usern);
         // date
-        const date = createElement("div", "created-date", "Apr 16");
+        const date = createElement("div", "created-date", time);
         // message
-        const msg = createElement("div", "conversation-message", "Placeholder");
+        const msg = createElement("div", "conversation-message", " ");
         // button
         const button = createElement("button", "close-conversation", "x");
-        appendChildren(container, [username, date, msg, button]);
+        [username, msg, date].forEach((element) => addFunctionalityChild(element, retrieveMessages));
+        addFunctionalityChild(button, deleteConversation);
+        appendChildren(container, [username, msg, date, button]);
         conversations.appendChild(container);
+    }
+
+    function frontClearMessages() {
+        messagesContainer.innerHTML = "";
     }
 
     // Handles duplicates request in the frontend 
@@ -102,46 +140,59 @@ const socket = io();
         }, 1500);
     }
 
+    // Delete element by ID
+    function frontDeleteElement(id) {
+        const remove = document.getElementById(id);
+        if(remove) {
+            remove.parentNode.removeChild(remove);
+        }
+    }
+
+    // Handles/Display accepted request
+    function frontHandleAccepted(conId, username) {
+        frontDeleteElement(conId);
+        frontDisplayConversation(conId, username);
+    }
+
     // Send identity 
     socket.emit('identity', sessionStorage.getItem('token'));
+    // Receive identity 
+    socket.on("receive-identity", (username, id) => {
+        displayUserInfo(username, id);
+    })
     // Redirect to login
     socket.on('redirect', () => {
         window.location.href = "/login";
     });
-    // display real time conversation request
+    // retrieve messages
+    retrieveConversations();
+    // Display real time conversation request
     socket.on("request-conversation", (data) => {
         frontDisplayReceiveRequest(data.conId, data.creator);
     });
+    // Displays real time conversation request accepted
+    socket.on("accept-conversation", (data) => {
+        frontHandleAccepted(data.conId, data.receiver);
+    })
+    // Displays real time conversation request deleted
+    socket.on("delete-conversation", (data) => {
+        frontDeleteElement(data.conId);
+    })
+    // Displays real time message receives 
+    socket.on("display-receive", (data) => {
+        if(data.sender = talkingTo.value) {
+            frontDisplayMessage(false, data.message, data.time);
+        }
+        else {
+            frontUpdateConversation(data)
+        }
+    })
 
-    // type.onkeypress = async () => {
-    //     const key = window.event.keyCode;
-    //     if (key === 13) {
-    //         const message = document.getElementById("user-input").value;
-    //         const receiver = document.getElementById("receiver-username").innerHTML;
-    //         if (message) {
-    //             // Backend
-    //             const result = await fetch("/api/chat/post", {
-    //                 method: "POST",
-    //                 body: JSON.stringify({
-    //                     receiver,
-    //                     message
-    //                 }),
-    //                 headers: {
-    //                     'Content-Type': 'application/json',
-    //                     'authorization': `Bearer ${sessionStorage.getItem("token")}`
-    //                 }
-    //             }).then((res) => res.json());
-    //             if (result.status === "ok") {
-    //                 displayMessage(true, result.message);
-    //             } else {
-    //                 console.log("posted unsuccessfully");
-    //             }
-    //             document.getElementById("user-input").value = "";
-    //         }
-    //     }
-    // }
-
-
+    function frontUpdateConversation(data) {
+        const container = document.getElementById(data.conId);
+        container.children[1].innerHTML = data.message;
+    }
+    
     // Search/Send Conversations
     search.onkeypress = async function () {
         const key = window.event.keyCode;
@@ -154,10 +205,11 @@ const socket = io();
                 method: "GET",
                 headers: {
                     'authorization': `Bearer ${sessionStorage.getItem("token")}`
-                }
+                },
             }).then((res) => (res.json()));
             if (request.status === "ok") {
-                frontDisplayRequest(request.conversationId, receiver);
+                console.log(request);
+                frontDisplayRequest(request.conversationId, receiver, request.createdAt);
             }
             else if (request.status === "duplicate") {
                 frontDuplicateRequest(request.conversationId, receiver);
@@ -167,14 +219,44 @@ const socket = io();
         }
     }
 
+
     // accept conversations
     async function acceptConversationRequest(conId) {
-        
+        const request = await fetch("/api/chat/accept", {
+            method: "POST",
+            body: JSON.stringify({
+                conId
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+                'authorization': `Bearer ${sessionStorage.getItem("token")}`
+            }
+        }).then((res) => res.json());
+        if (request.status === "ok") {
+            frontHandleAccepted(conId, request.user, request.createdAt);
+        }
+        else {
+            frontDeleteElement(condId);
+        }
     }
 
-
     // delete conversations
-
+    async function deleteConversation(conId) {
+        const request = await fetch("/api/chat/delete", {
+            method: "POST",
+            body: JSON.stringify({
+                conId
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+                'authorization': `Bearer ${sessionStorage.getItem("token")}`
+            }
+        }).then((res) => res.json());
+        if (request.status === "ok") {
+            frontDeleteElement(conId);
+        }
+        // else ?
+    }
 
     // retrieve converstaions 
     async function retrieveConversations() {
@@ -188,24 +270,93 @@ const socket = io();
             if (conversation.status === "pending") {
                 // Request sent by the current user
                 if (conversation.creator === request["receiver"]) {
-                    frontDisplayRequest(conversation.conversationId, conversation.creator);
+                    frontDisplayRequest(conversation._id, conversation.creator, conversation.createdAt);
                 }
                 // Request sent to the current user
                 else {
-                    frontDisplayReceiveRequest(conversation.conversationId, request["receiver"]);
+                    frontDisplayReceiveRequest(conversation._id, request["receiver"],  conversation.createdAt);
                 }
             }
             // established conversations
             else {
-                const name = (conversation.creator === request["receiver"]) ? conversation.userIds[1] : request[1];
-                frontDisplayConversation(conversation.conversationId, name);
+                const name = (conversation.userIds[0] === request["receiver"]) ? conversation.userIds[1] : conversation.userIds[0];
+                frontDisplayConversation(conversation._id, name, conversation.createdAt);
             }
         });
     }
-    retrieveConversations();
+    
+    function frontDisplayMessage(isSend, message, time) {
+        const container = createElement("div", "message-row");
+        if(isSend) {
+            container.classList.add("your-message");
+        }else{
+            container.classList.add("other-message");
+        }
+        // message
+        const msg = createElement("div", "message-text", message);
+        // message-time
+        const msgTime = createElement("div", "message-time", time);
+        appendChildren(container, [msg, msgTime]);
+        messagesContainer.prepend(container);
+    }
 
-    // Type message
+    function frontDisplayMessages(messages) {
+        messages.forEach((msg) => frontDisplayMessage(msg.isSender, msg.message, msg.createdAt));
+    }
 
-    // Get message 
+
+    function frontDisplayReceiver(username, conId) {
+        const span = document.getElementById("receiver");
+        span.innerHTML = username;
+        span.value = conId;
+    }
+
+    // Retrieve messages from a conversations 
+    async function retrieveMessages(conId) {
+        const request = await fetch(`/api/chat/messages/${conId}`, {
+            method: "GET",
+            headers: {
+                'authorization': `Bearer ${sessionStorage.getItem("token")}`
+            }
+        }).then((res) => res.json());
+        if(request.status === "ok") {
+            frontClearMessages();
+            frontDisplayReceiver(request.other, conId)
+            frontDisplayMessages(request.result);
+        }
+    }
+
+
+    // Sends Type message
+    type.onkeypress = async () => {
+        const key = window.event.keyCode;
+        const receiver = document.getElementById("receiver").innerText;
+        if (key === 13 && receiver) {
+            const message = document.getElementById("user-input").value;
+            const conId = document.getElementById("receiver").value;
+            if (message) {
+                const result = await fetch("/api/chat/post", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        conId,
+                        receiver,
+                        message
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'authorization': `Bearer ${sessionStorage.getItem("token")}`
+                    }
+                }).then((res) => res.json());
+                if (result.status === "ok") {
+                    frontDisplayMessage(true, result.result.message, result.result.createdAt);
+                } 
+            document.getElementById("user-input").value = "";
+            }
+        }
+    }
+
+
 
 })();
+
+

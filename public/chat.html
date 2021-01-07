@@ -9,11 +9,13 @@
 
 <body>
     <div id="chat-container">
+        <!--search bar for finding users you want to add-->
         <div id="search-container">
-            <input type="text" id = "search-username" placeholder="Search Username" />
+            <input type="text" id="search-username" placeholder="Search Username" />
         </div>
+        <!--list of past conversations you've had and notifications for friend requests-->
         <div id="conversation-list">
-            <div class="conversation active" id="demo">
+            <!-- <div class="conversation active" id="demo">
                 <div class="title-text">Username</div>
                 <div class=created-date>Apr 16</div>
                 <div class="conversation-message">
@@ -23,7 +25,7 @@
                 </div>
                 <button class="close-conversation">x</button>
             </div>
-
+            notifications for receivers being asked to be friend with the sender
             <div class='friendrequest' id="demo">
                 <div class="title-text">Username</div>
                 <div class=created-date>Apr 16</div>
@@ -31,7 +33,7 @@
                 <button class="accept">Accept</button>
                 <button class="reject">Reject</button>
             </div>
-
+            notification for senders who have successfully send the friend request
             <div class='reqconfirmation' id="demo">
                 <div class="title-text">Username</div>
                 <div class="title-text b">
@@ -39,43 +41,27 @@
                 </div>
                 <div class=created-date>Apr 16</div>
                 <button class="close-conversation">x</button>
-            </div>
+            </div> -->
 
         </div>
+        <!--displays user's username and socket io id-->
         <div id="new-message-container">
-            <img src="icons8-head-profile-50.png" alt="">
-            <div class="username">Username:</div>
-            <div class="socket">Socket.io:</div>
+            <img src="./asset/head.png" alt="">
+            <div id="username">Username:</div>
+            <div id="socket">Socket.io:</div>
         </div>
+        <!--shows other user's username that you are currently talking to-->
         <div id="chat-title">
-            <span>doraemon</span>
+            <span id ="receiver"></span>
             <button id="btn">logout</button>
         </div>
+        <!--contains all the messages you and other user have send -->
         <div id="chat-message-list">
-            <div class="message-row your-message">
-                <div class="message-text">Ok then Ok then Ok then Ok then</div>
-                <div class="message-time"> Apr 16</div>
-                <div class="message-text">Ok then</div>
-                <div class="message-time"> Apr 16</div>
-                <div class="message-text">Ok then</div>
-                <div class="message-time"> Apr 16</div>
-                <div class="message-text">Ok then</div>
-                <div class="message-time"> Apr 16</div>
-            </div>
-            <div class="message-row other-message">
-                <div class="message-text">Ok then</div>
-                <div class="message-time"> Apr 16</div>
-                <div class="message-text">Ok then</div>
-                <div class="message-time"> Apr 16</div>
-                <div class="message-text">Ok then</div>
-                <div class="message-time"> Apr 16</div>
-                <div class="message-text">Ok then</div>
-                <div class="message-time"> Apr 16</div>
-            </div>
+            <!-- messages -->
         </div>
+        <!--place where the user will type in messages that they want to send to the receiver-->
         <div id="chat-form">
-            <!-- <img src="" alt="Add Attachment"> -->
-            <input type="text" placeholder="type a message" />
+            <input type="text" id="user-input" placeholder="type a message" />
         </div>
     </div>
 

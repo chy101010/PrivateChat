@@ -5,7 +5,8 @@ const online = require("../model/online");
 mongoose.connect('mongodb://localhost:27017/chat', {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    useCreateIndex: true
+    useCreateIndex: true,
+    useFindAndModify: false
 });
 
 mongoose.connection.on('connected', async () => {

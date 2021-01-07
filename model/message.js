@@ -26,7 +26,7 @@ MessageSchema.statics.getMessagesById = async function (id) {
     try{
         const result = await this.aggregate([
             {$match: {conversationId : id}},
-            {$sort: {createdAt: -1}}
+            {$sort: {createdAt: 1}}
         ]);
         return result;
     }catch(error){

@@ -6,11 +6,13 @@ function arrayLimit(val) {
     return val.length === 2;
 }
 
-function returnResult(stat, msg, id) {
+function returnResult(stat, msg, id, username, time) {
     return {
         status: stat,
         message: msg,
-        conversationId: id
+        conversationId: id,
+        user: username,
+        createdAt: time
     }
 }
 
@@ -56,7 +58,7 @@ ConversationSchema.statics.sendRequest = async function (creator, receivor) {
                 'userIds': [creator, receivor],
                 'creator': creator
             })
-        return returnResult('ok', 'new conversation created', newCon._id);
+        return returnResult('ok', 'new conversation created', newCon._id, "", newCon.createdAt);
     } catch (error) {
         console.log("Conversation's sendRequest", error);
         throw error;
@@ -68,13 +70,13 @@ ConversationSchema.statics.acceptRequest = async function (id, receiver) {
         const request = await this.findOneAndUpdate(
             {
                 _id: id,
-                userIds: { $elemMatch: [receiver] }
+                userIds: { $in: [receiver] }
             },
             {
                 status: 'accept'
             });
         if (request) {
-            return returnResult('ok', 'request accepted', id);
+            return returnResult('ok', 'request accepted', id, request.creator);
         }
         else {
             return returnResult('error', 'request unfound', id);
@@ -89,7 +91,6 @@ ConversationSchema.statics.acceptRequest = async function (id, receiver) {
 
 ConversationSchema.statics.getConversationsByUsername = async function (username) {
     try {
-        console.log(username);
         const result = await this.find(
             {
                 userIds: { $in: [ username ] }
@@ -100,8 +101,6 @@ ConversationSchema.statics.getConversationsByUsername = async function (username
         throw error;
     }
 }
-
-
 
 ConversationSchema.statics.getConversationById = async function (id) {
     try {
@@ -125,7 +124,7 @@ ConversationSchema.statics.deleteConversation = async function (id, username) {
                 userIds: { $in: [username] }
             });
         if (request) {
-            return returnResult('ok', 'request accepted', id);
+            return returnResult('ok', 'request deleted', id, request.creator);
         } else {
             return returnResult('error', 'request delete failed', id);
         }

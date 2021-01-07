@@ -23,6 +23,7 @@ class WebSocket {
                 if (!(await Users.findUser(decoded.username))) {
                     throw new Error("");
                 }
+                global.io.to(user.id).emit("receive-identity", decoded.username, user.id);
                 const connected = await OnlineUsers.logOnline(decoded.username, user.id);
                 console.log(`Connect:${connected}`);
             } catch {
