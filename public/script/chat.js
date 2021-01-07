@@ -1,20 +1,19 @@
-//  http request for the username
-//  create an active conversation
-//  if the user is not online push to database 
-//  if the user is online use socket to send directly
+// Initialize a client side socket
 const socket = io();
 (function () {
+    // Container for messages
     const messagesContainer = document.getElementById("chat-message-list");
+    // TextArea for message input
     const type = document.getElementById("chat-form");
+    // The search bar
     const search = document.getElementById("search-container");
+    // Container for conversations
     const conversations = document.getElementById("conversation-list");
+    // Conversation title representing the username you are send messages to.
     const talkingTo = document.getElementById("receiver");
+    // log off button
+    const logoff = document.getElementById("logOff");
 
-    // Display the username and socket Id
-    function displayUserInfo(username, id) {
-        document.getElementById("username").innerText += username;
-        document.getElementById("socket").innerText += id;
-    }
 
     // Create a HTML element of the given (type) with class name of (classes) and innerText of (text) 
     function createElement(type, classes, text = '') {
@@ -29,6 +28,15 @@ const socket = io();
         children.forEach((child) => parent.appendChild(child));
     }
 
+    // Display the username and socket Id
+    function frontDisplayUserInfo(username, id) {
+        document.getElementById("username").innerText += username;
+        document.getElementById("socket").innerText += id;
+    }
+
+    // {conId} conversation Id 
+    // {username} username of the receiver of the request
+    // {time} the time inwhich the conversation is created
     // Displays a send-request conversation tag
     function frontDisplayRequest(conId, receiver, time) {
         time = time.slice(0, 10);
@@ -43,6 +51,7 @@ const socket = io();
         const date = createElement("div", "created-date", time);
         // button 
         const button = createElement("button", "close-conversation", "x");
+        // Adding delete-conversation functionality
         addFunctionalityChild(button, deleteConversation);
         appendChildren(container, [username, message, date, button]);
         conversations.appendChild(container);
@@ -66,6 +75,9 @@ const socket = io();
         })
     }
 
+    // {conId} conversation Id 
+    // {username} username of the sender of the request 
+    // {time} the time inwhich the conversation is created
     // Displays a receive-request conversation tag
     function frontDisplayReceiveRequest(conId, username, time) {
         time = time.slice(0, 10);
@@ -88,6 +100,9 @@ const socket = io();
         conversations.appendChild(container);
     }
 
+    // {conId} conversation Id 
+    // {username} username of the receiver
+    // {time} the time inwhich the conversation is created
     // Display a established-conversation tag 
     function frontDisplayConversation(conId, usern, time) {
         time = time.slice(0, 10);
@@ -109,6 +124,7 @@ const socket = io();
         conversations.appendChild(container);
     }
 
+    // Clear the all the displaying messages 
     function frontClearMessages() {
         messagesContainer.innerHTML = "";
     }
@@ -140,25 +156,65 @@ const socket = io();
         }, 1500);
     }
 
-    // Delete element by ID
+    // Delete an html element by Id
     function frontDeleteElement(id) {
         const remove = document.getElementById(id);
-        if(remove) {
+        if (remove) {
             remove.parentNode.removeChild(remove);
         }
     }
 
     // Handles/Display accepted request
-    function frontHandleAccepted(conId, username) {
+    function frontHandleAccepted(conId, username, time) {
         frontDeleteElement(conId);
-        frontDisplayConversation(conId, username);
+        frontDisplayConversation(conId, username, time);
+    }
+
+
+    //{isSend}, indicates whether the current user is the sender or the receiver. 
+    //{message}, the message to be displayed
+    //{time}, the time in which the message is sent
+    function frontDisplayMessage(isSend, message, time) {
+        const container = createElement("div", "message-row");
+        if (isSend) {
+            container.classList.add("your-message");
+        } else {
+            container.classList.add("other-message");
+        }
+        // message
+        const msg = createElement("div", "message-text", message);
+        // message-time
+        const msgTime = createElement("div", "message-time", time);
+        appendChildren(container, [msg, msgTime]);
+        messagesContainer.prepend(container);
+    }
+
+    //{messages} is an array of messages retrieved from the db in the form of {isSender, Message, CreatedAt}. 
+    function frontDisplayMessages(messages) {
+        messages.forEach((msg) => frontDisplayMessage(msg.isSender, msg.message, msg.createdAt));
+    }
+
+    // {username} is the username of the receiver
+    // {conId} the conversation id
+    // Displays the receiver's username in the chat title
+    function frontDisplayReceiver(username, conId) {
+        const span = document.getElementById("receiver");
+        span.innerHTML = username;
+        span.value = conId;
+    }
+
+
+    // To work 
+    function frontUpdateConversation(data) {
+        const container = document.getElementById(data.conId);
+        container.children[1].innerHTML = data.message;
     }
 
     // Send identity 
     socket.emit('identity', sessionStorage.getItem('token'));
     // Receive identity 
     socket.on("receive-identity", (username, id) => {
-        displayUserInfo(username, id);
+        frontDisplayUserInfo(username, id);
     })
     // Redirect to login
     socket.on('redirect', () => {
@@ -168,32 +224,33 @@ const socket = io();
     retrieveConversations();
     // Display real time conversation request
     socket.on("request-conversation", (data) => {
-        frontDisplayReceiveRequest(data.conId, data.creator);
+        frontDisplayReceiveRequest(data.conId, data.creator, data.createdAt);
     });
     // Displays real time conversation request accepted
     socket.on("accept-conversation", (data) => {
-        frontHandleAccepted(data.conId, data.receiver);
+        frontHandleAccepted(data.conId, data.receiver, data.createdAt);
     })
     // Displays real time conversation request deleted
     socket.on("delete-conversation", (data) => {
         frontDeleteElement(data.conId);
+        if(talkingTo.value = data.conId) {
+            frontClearMessages();
+            talkingTo.value = "";
+        }
     })
     // Displays real time message receives 
     socket.on("display-receive", (data) => {
-        if(data.sender = talkingTo.value) {
-            frontDisplayMessage(false, data.message, data.time);
-        }
-        else {
-            frontUpdateConversation(data)
-        }
+        frontDisplayMessage(false, data.message, data.time);
+        data.message = "from: " + data.message;
+        frontUpdateConversation(data)
     })
+    // log off/ redirecting to login and removing the access token
+    logoff.addEventListener("click", () => {
+        sessionStorage.removeItem('token');
+        window.location.href = "/login";
+    });
 
-    function frontUpdateConversation(data) {
-        const container = document.getElementById(data.conId);
-        container.children[1].innerHTML = data.message;
-    }
-    
-    // Search/Send Conversations
+    // Sends a conversation request to the username typed in the search bar 
     search.onkeypress = async function () {
         const key = window.event.keyCode;
         if (key === 13) {
@@ -208,7 +265,6 @@ const socket = io();
                 },
             }).then((res) => (res.json()));
             if (request.status === "ok") {
-                console.log(request);
                 frontDisplayRequest(request.conversationId, receiver, request.createdAt);
             }
             else if (request.status === "duplicate") {
@@ -220,7 +276,7 @@ const socket = io();
     }
 
 
-    // accept conversations
+    // accept conversations given conversation Id
     async function acceptConversationRequest(conId) {
         const request = await fetch("/api/chat/accept", {
             method: "POST",
@@ -240,7 +296,7 @@ const socket = io();
         }
     }
 
-    // delete conversations
+    // Delete conversations given conversation Id
     async function deleteConversation(conId) {
         const request = await fetch("/api/chat/delete", {
             method: "POST",
@@ -254,11 +310,15 @@ const socket = io();
         }).then((res) => res.json());
         if (request.status === "ok") {
             frontDeleteElement(conId);
+            if(talkingTo.value == conId) {
+                frontClearMessages();
+                talkingTo.value = "";
+            }
         }
         // else ?
     }
 
-    // retrieve converstaions 
+    // Retrieve all existing converstaions of the current user 
     async function retrieveConversations() {
         const request = await fetch(`/api/chat/retrieve`, {
             method: "GET",
@@ -274,7 +334,7 @@ const socket = io();
                 }
                 // Request sent to the current user
                 else {
-                    frontDisplayReceiveRequest(conversation._id, request["receiver"],  conversation.createdAt);
+                    frontDisplayReceiveRequest(conversation._id, request["receiver"], conversation.createdAt);
                 }
             }
             // established conversations
@@ -284,34 +344,8 @@ const socket = io();
             }
         });
     }
-    
-    function frontDisplayMessage(isSend, message, time) {
-        const container = createElement("div", "message-row");
-        if(isSend) {
-            container.classList.add("your-message");
-        }else{
-            container.classList.add("other-message");
-        }
-        // message
-        const msg = createElement("div", "message-text", message);
-        // message-time
-        const msgTime = createElement("div", "message-time", time);
-        appendChildren(container, [msg, msgTime]);
-        messagesContainer.prepend(container);
-    }
 
-    function frontDisplayMessages(messages) {
-        messages.forEach((msg) => frontDisplayMessage(msg.isSender, msg.message, msg.createdAt));
-    }
-
-
-    function frontDisplayReceiver(username, conId) {
-        const span = document.getElementById("receiver");
-        span.innerHTML = username;
-        span.value = conId;
-    }
-
-    // Retrieve messages from a conversations 
+    // Retrieve messages from a conversation given conversation Id
     async function retrieveMessages(conId) {
         const request = await fetch(`/api/chat/messages/${conId}`, {
             method: "GET",
@@ -319,7 +353,7 @@ const socket = io();
                 'authorization': `Bearer ${sessionStorage.getItem("token")}`
             }
         }).then((res) => res.json());
-        if(request.status === "ok") {
+        if (request.status === "ok") {
             frontClearMessages();
             frontDisplayReceiver(request.other, conId)
             frontDisplayMessages(request.result);
@@ -327,7 +361,7 @@ const socket = io();
     }
 
 
-    // Sends Type message
+    // Sends message to the receiver and the database
     type.onkeypress = async () => {
         const key = window.event.keyCode;
         const receiver = document.getElementById("receiver").innerText;
@@ -349,8 +383,9 @@ const socket = io();
                 }).then((res) => res.json());
                 if (result.status === "ok") {
                     frontDisplayMessage(true, result.result.message, result.result.createdAt);
-                } 
-            document.getElementById("user-input").value = "";
+                    frontUpdateConversation({conId: result.result.conversationId, message: "to: " + message});
+                }
+                document.getElementById("user-input").value = "";
             }
         }
     }

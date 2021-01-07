@@ -2,6 +2,7 @@ async function submitRegistration(event) {
     event.preventDefault();
     const username = document.getElementById("res-username").value;
     const password = document.getElementById("res-password").value;
+    console.log("called")
     const result = await fetch("/register/submit", {
         method: "POST",
         headers: {
@@ -23,6 +24,8 @@ async function submitRegistration(event) {
 
 
 (function () {
-    const form = document.getElementById("res-form");
-    form.addEventListener('submit', submitRegistration);
+    const button = document.getElementById("submit");
+    const login = document.getElementById("to-login");
+    login.onclick = () => window.location.href = "http://localhost:3000/login";
+    button.addEventListener('click', submitRegistration);
 })();

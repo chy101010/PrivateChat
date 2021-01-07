@@ -10,7 +10,6 @@ const submitRegistration = async function (req, res) {
 
     try {
         const result = await user.createUser(username, password);
-        console.log('User created ' + result);
     } catch (error) {
         // successful
         if (error.code === 11000) {

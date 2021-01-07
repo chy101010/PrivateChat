@@ -5,7 +5,7 @@ const MessageSchema = new mongoose.Schema(
         sender: { type: String, required: true },
         receiver: { type: String, require: true },
         message: { type: String, minlength: 1, maxlength: 100 },
-        conversationId: {type: String},
+        conversationId: { type: String },
     },
     {
         timestamps: true,
@@ -15,7 +15,7 @@ const MessageSchema = new mongoose.Schema(
 
 MessageSchema.statics.postMessage = async function (sender, receiver, message, conversationId) {
     try {
-        const result = await this.create({ sender, receiver, message, conversationId});
+        const result = await this.create({ sender, receiver, message, conversationId });
         return result;
     } catch (error) {
         throw error;
@@ -23,13 +23,22 @@ MessageSchema.statics.postMessage = async function (sender, receiver, message, c
 }
 
 MessageSchema.statics.getMessagesById = async function (id) {
-    try{
+    try {
         const result = await this.aggregate([
-            {$match: {conversationId : id}},
-            {$sort: {createdAt: 1}}
+            { $match: { conversationId: id } },
+            { $sort: { createdAt: 1 } }
         ]);
         return result;
-    }catch(error){
+    } catch (error) {
+        throw error;
+    }
+}
+
+MessageSchema.statics.deleteMessagesById = async function (id) {
+    try {
+        const result = await this.deleteMany({conversationId: id});
+        return result;
+    } catch (error) {
         throw error;
     }
 }

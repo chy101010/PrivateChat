@@ -76,7 +76,7 @@ ConversationSchema.statics.acceptRequest = async function (id, receiver) {
                 status: 'accept'
             });
         if (request) {
-            return returnResult('ok', 'request accepted', id, request.creator);
+            return returnResult('ok', 'request accepted', id, request.creator, request.createdAt);
         }
         else {
             return returnResult('error', 'request unfound', id);
@@ -124,7 +124,8 @@ ConversationSchema.statics.deleteConversation = async function (id, username) {
                 userIds: { $in: [username] }
             });
         if (request) {
-            return returnResult('ok', 'request deleted', id, request.creator);
+            const user = (username === request.userIds[0]) ? request.userIds[1] : request.userIds[0];
+            return returnResult('ok', 'request deleted', id, user);
         } else {
             return returnResult('error', 'request delete failed', id);
         }

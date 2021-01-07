@@ -16,7 +16,11 @@ const sendConversationRequest = async function (req, res) {
             const receivers = await Online.findUserByUsername(receiver);
             if (request.status !== "duplicate") {
                 receivers.forEach((online) => {
-                    global.io.to(online.socketId).emit("request-conversation", { creator, conId: request.conversationId, createdAt : request.createdAt});
+                    global.io.to(online.socketId).emit("request-conversation", {
+                        creator,
+                        conId: request.conversationId,
+                        createdAt: request.createdAt 
+                    });
                 });
             }
             return res.json(request);
@@ -42,7 +46,12 @@ const acceptConversationRequest = async function (req, res) {
             const onlines = await Online.findUserByUsername(request.user);
             if (request.status === "ok") {
                 onlines.forEach((online) => {
-                    global.io.to(online.socketId).emit("accept-conversation", { receiver, conId: request.conversationId });
+                    global.io.to(online.socketId).emit("accept-conversation", 
+                    { 
+                        receiver,
+                        conId: request.conversationId, 
+                        createdAt: request.createdAt 
+                    });
                 });
             }
             return res.json(request);
@@ -65,8 +74,12 @@ const deleteConversation = async function (req, res) {
             const request = await Cons.deleteConversation(conId, username);
             const onlines = await Online.findUserByUsername(request.user);
             if (request.status === "ok") {
+                Message.deleteMessagesById(conId);
                 onlines.forEach((online) => {
-                    global.io.to(online.socketId).emit("delete-conversation", { conId: request.conversationId });
+                    global.io.to(online.socketId).emit("delete-conversation", 
+                    { 
+                        conId: request.conversationId 
+                    });
                 });
             }
             return res.json(request);
@@ -103,7 +116,6 @@ const postMessage = async function (req, res) {
             const post = await Message.postMessage(username, receiver, message, conId);
             // send to receiver sockets
             const online = await Online.findUserByUsername(receiver);
-            console.log(online);
             online.forEach((user) => {
                 global.io.to(user.socketId).emit("display-receive",
                     {
@@ -122,11 +134,6 @@ const postMessage = async function (req, res) {
         return res.json({ status: "error", error: `System Error: ${error.message}` })
     }
 }
-
-function formatMessage(sender, message, time) {
-    return { sender, message, time };
-}
-
 
 // get messages
 const retrieveMessages = async function (req, res) {
