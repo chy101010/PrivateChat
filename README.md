@@ -24,6 +24,9 @@ This is a messaging application based on NodeJS/ExpressJS/MongoDB and Sockets ap
 <h3> Chat page </h3>
 <img src = "readme/chat.png" width = 400>
 
-
-<h2>Motivation</h2>
-<p>I simply want to learn web developments before the upcoming semester. So I think a real time messaging application would be a great start.</p>
+<h2>Upcomings</h2>
+<ol>
+  <li>Some Bug fixings</li>
+  <li>Black listing user</li>
+  <li>Messages Pagination</li>
+</ol>
