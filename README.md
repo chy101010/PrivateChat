@@ -3,7 +3,7 @@ This is a messaging application based on NodeJS/ExpressJS/MongoDB and Sockets ap
 
 <h2> Instructions To Run </h2>
 <ol> 
-  <li>Clone this project: https://github.com/chy101010/SimpleChat</li>
+  <li>Clone this project: https://github.com/chy101010/SimpleChat.git</li>
   <li>Download MongoDB, execute mongod from its bin in the termination</li>
   <li>Install all dependencies using <ol> <li> npm install </li> <li> npm install nodemon </li> </ol> </li>  
   <li>npm run launch</li>
