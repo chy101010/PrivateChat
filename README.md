@@ -1,5 +1,5 @@
 <h1> Chat Web Application </h1>
-This is a messaging application based NodeJS/ExpressJS/MongoDB and Sockets applications. This is an application enables clients to send private conversation requests (to be rejected/accepted) to other clients to establish a private one to one conversation.However, a client must be logged in to access the chat features. 
+This is a messaging application based on NodeJS/ExpressJS/MongoDB and Sockets applications. This application enables clients to send private conversation requests (to be rejected/accepted) to other clients to establish a private one to one conversation. However, a client must be logged in to access the chat features. This feature is implemented through JWT authentication in the Api calls. Once a client is logged in, the client will receive an unique socket instance that establishes a bidirectional connection with the server, so the client can receive data(new messages, new requests, deleted converstaions) emitted from the server side. Every posted message will be stored in the database until the conversation room in which the message is related to is deleted. Therefore, once a client log in, he can retrieve all messages that are sent to him when he was offline.
 
 <h2> Instructions To Run </h2>
 <ol> 
@@ -16,8 +16,7 @@ This is a messaging application based NodeJS/ExpressJS/MongoDB and Sockets appli
   <li>Login with the account created</li>
 </ol>
 
-
-
+<h2> ScreenShots </h2>
 <h3> Login page </h3>
 <img src = "readme/login.png" width = 400>
 <h3> Register page </h3>
@@ -26,3 +25,5 @@ This is a messaging application based NodeJS/ExpressJS/MongoDB and Sockets appli
 <img src = "readme/chat.png" width = 400>
 
 
+<h2>Motivation</h2>
+<p>I simply want to learn web developments before the upcoming semester. So I think a real time messaging application would be a great start.</p>
