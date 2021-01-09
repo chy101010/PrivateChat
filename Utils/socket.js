@@ -12,6 +12,7 @@ class WebSocket {
             if (!disconnected) {
                 return console.log('Disconnect: anonymous user')
             }
+            // log off in database
             OnlineUsers.logOffLine(user.id);
             console.log(`Disconnect: ${disconnected}`);
         })
@@ -31,30 +32,6 @@ class WebSocket {
                 user.disconnect();
             }
         })
-
-        // user.on("message", async (token, receiver, msg) => {
-        //     try {
-        //         const sender = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET).username;
-        //         const receive = await Users.findUser(receiver);
-        //         if(!receive) {
-        //             throw new Error("Invalid Receiver");
-        //         }
-        //         const isOnline = await OnlineUsers.findUserByUsername(receiver);
-        //         // Log into the db
-        //         Message.postMessage(sender, receriver, msg);
-        //         // Emit message to the online receiver directly real time
-        //         if(isOnline) {
-        //             receive.forEach((online) =>{
-        //                 global.io.to(online.socketId).emit("display-message", msg, sender);
-        //             })
-        //         }
-        //         else {
-        //             console.log("Receiver is not online thus logged into the db");
-        //         }
-        //     }catch(eror) {
-        //         console.log(error.Message);
-        //     }
-        // })
     }
 }
 
