@@ -16,11 +16,6 @@ This is a messaging application based on NodeJS/ExpressJS/MongoDB and Sockets ap
   <li>Login with the account created</li>
 </ol>
 
-<h2> ScreenShots </h2>
-<h3> Login page </h3>
-<img src = "readme/login.png" width = 400>
-<h3> Register page </h3>
-<img src = "readme/register.png" width = 400>
 <h3> Chat page </h3>
 <img src = "readme/chat.png" width = 400>
 
