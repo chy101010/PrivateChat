@@ -16,6 +16,20 @@ This is a messaging application based on NodeJS/ExpressJS/MongoDB and Sockets ap
   <li>Login with the account created</li>
 </ol>
 
+<h3>Features</h3>
+<ul>
+  <li>Real Time
+    <ul>
+      <li>messaging</li>
+      <li>sending requests</li>
+      <li>accepting requests</li>
+      <li>rejectings requests</li>
+      <li>deleteing conversations</li>
+    </ul>
+  </li>
+  <li>User Authentication/Restricted Routes</li>
+</ul>
+
 <h3> Chat page </h3>
 <img src = "readme/chat.png" width = 400>
 
@@ -24,4 +38,5 @@ This is a messaging application based on NodeJS/ExpressJS/MongoDB and Sockets ap
   <li>Some codes clean up</li>
   <li>Black listing user</li>
   <li>Messages Pagination</li>
+  <li>Making it more like facebook??</li>
 </ol>
