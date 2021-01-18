@@ -35,6 +35,8 @@ This is a messaging application based on NodeJS/ExpressJS/MongoDB and Sockets ap
 
 <h2>Upcomings</h2>
 <ol>
+  <li>Notification</li>
+  <li>Improve Frontend/login/register page</li>
   <li>Some codes clean up</li>
   <li>Black listing user</li>
   <li>Messages Pagination</li>
