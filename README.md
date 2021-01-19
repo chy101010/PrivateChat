@@ -9,13 +9,6 @@ This is a messaging application based on NodeJS/ExpressJS/MongoDB and Sockets ap
   <li>npm run launch</li>
 </ol>
 
-<h5> When the server is ready </h5>
-<ol>
-  <li>Go to your browswer and search up http://localhost:3000/</li>
-  <li>Register an account</li>
-  <li>Login with the account created</li>
-</ol>
-
 <h3>Features</h3>
 <ul>
   <li>Real Time
