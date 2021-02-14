@@ -25,7 +25,6 @@ This is a messaging application based on NodeJS/ExpressJS/MongoDB and Sockets ap
 
 <h3> Chat page </h3>
 <img src = "readme/chat.png" width = 400>
-<p>Followed the frontend guide: https://www.youtube.com/watch?v=f8el0g_rXbY&t=1s</p>
 
 <h2>Upcomings</h2>
 <ol>
